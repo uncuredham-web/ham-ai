@@ -1,0 +1,6 @@
+name = "notification-bot"
+main = "src/index.ts"
+compatibility_date = "2026-11-20"
+
+[triggers]
+crons = ["0 7 * * *", "0 20 * * *"]
