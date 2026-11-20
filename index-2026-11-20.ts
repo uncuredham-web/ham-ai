@@ -1,23 +1,24 @@
-interface WeatherResponse {
-  forecast: {
-    forecastday: Array<{
-      hour: Array<{
-        time_epoch: number;
-        time: string;
-        condition: {
-          text: string;
-        };
-        chance_of_rain?: number;
-        will_it_rain?: number;
-      }>;
-    }>;
-  };
-}
+    if (urlObj.pathname === '/commit-git' && request.method === 'POST') {
+      try {
+        const rawText = await request.text();
+        let body: any;
+        try {
+          body = JSON.parse(rawText);
+        } catch (jsonErr: any) {
+          throw new Error(`Invalid JSON payload: ${jsonErr.message} (Raw: ${rawText.slice(0, 100)})`);
+        }
 
-export interface Env {
-  WEATHER_API_KEY: string;
-  TARGET_LOCATION: string;
-}
+        const files = body.files;
+        const commitMessage = body.commit_message || 'Auto-commit from HamAI';
 
-export default {
-  async scheduled(controller: ScheduledController
+        if (!files || !Array.isArray(files)) {
+          return new Response('Invalid files payload', { status: 400 });
+        }
+
+        for (const file of files) {
+          const path = file.filename;
+          const contentBase64 = btoa(unescape(encodeURIComponent(file.content)));
+          const apiUrl = `https://api.github.com/repos/${env.GITHUB_REPO}/contents/${path}`;
+
+          let sha: string | undefined = undefined;
+          const getRes = await fetch(apiUrl, {\n            headers: {\n              'Authorization': `Bearer ${env.GITHUB_TOKEN}`
