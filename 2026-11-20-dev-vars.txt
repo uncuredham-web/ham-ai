@@ -1,0 +1,3 @@
+WEATHER_API_KEY=your_actual_weather_api_key_here
+DISCORD_WEBHOOK_URL=your_actual_discord_webhook_url_here
+TARGET_LOCATION=Nerisa, Tokyo
