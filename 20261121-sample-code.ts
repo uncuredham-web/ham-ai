@@ -1,4 +1,1 @@
-function sampleNotification() {
-  console.log('これはファイル出力用のサンプルコードです');
-}
-sampleNotification();
+console.log('はむさんのプロジェクト、順調に進んでいますね！');
