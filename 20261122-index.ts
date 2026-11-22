@@ -1,28 +1,19 @@
-import { fetchWeatherAndNotify } from './weather';
-import { handleStretchTasks } from './20261122-tasks-client';
-
-export interface Env {
-  DISCORD_WEBHOOK_URL: string;
-  WEATHER_API_KEY: string;
-  GOOGLE_CLIENT_ID: string;
-  GOOGLE_CLIENT_SECRET: string;
-  GOOGLE_REFRESH_TOKEN: string;
-}
+import { callDifyApi } from './20261122-dify-client';
+import { commitToGitHub } from './20261122-github-client';
 
 export default {
-  async scheduled(
-    controller: ScheduledController,
-    env: Env,
-    ctx: ExecutionContext
-  ): Promise<void> {
-    const cron = controller.cron;
-
-    if (cron === '0 11 * * *' || cron === '0 22 * * *') {
-      // 天気通知などの処理
-      await fetchWeatherAndNotify(env);
-    } else {
-      // ストレッチ通知などの処理（初回登録 ＆ 最終集計通知）
-      await handleStretchTasks(env, cron);
+  async fetch(request: Request, env: any, ctx: ExecutionContext): Promise<Response> {
+    if (request.method === 'POST') {
+      const data = await request.json() as { query?: string, dsl?: string };
+      if (data.query) {
+        const difyResult = await callDifyApi(data.query, env);
+        return new Response(JSON.stringify(difyResult), { headers: { 'Content-Type': 'application/json' } });
+      }
+      if (data.dsl) {
+        await commitToGitHub(data.dsl, env);
+        return new Response('Committed successfully');
+      }
     }
-  },
+    return new Response('Discord Dify Bot is running.');
+  }
 };
